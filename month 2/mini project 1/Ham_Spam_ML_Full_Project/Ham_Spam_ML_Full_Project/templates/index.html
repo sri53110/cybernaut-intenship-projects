@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ham / Spam Classifier</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="icon">✉</div>
+      <p class="eyebrow">MACHINE LEARNING PROJECT</p>
+      <h1>Ham / Spam Classifier</h1>
+      <p class="subtitle">Paste a message below and let the trained model classify it.</p>
+    </section>
+
+    <section class="panel">
+      <form method="post">
+        <label for="message">Message text</label>
+        <textarea id="message" name="message" rows="6" maxlength="20000"
+          placeholder="Example: Congratulations! You have won a prize..." required>{{ message }}</textarea>
+        <div class="form-footer">
+          <span class="hint">Text only · Do not paste passwords or private information</span>
+          <button type="submit">Classify message <span aria-hidden="true">→</span></button>
+        </div>
+      </form>
+
+      {% if result %}
+      <div class="result {{ result.kind }}" role="status">
+        <div class="result-title">{{ result.label }}</div>
+        {% if result.confidence is not none %}
+          <p>Model score for the predicted class: <strong>{{ "%.1f"|format(result.confidence * 100) }}%</strong></p>
+          <p class="small">This score is not a guarantee of correctness.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="examples">
+        <p class="section-label">QUICK EXAMPLES</p>
+        <div class="example-grid">
+          <button class="example" type="button" data-message="Congratulations! You have won a free prize. Click here now!">Try a spam example</button>
+          <button class="example" type="button" data-message="Hi, are we meeting at college today?">Try a ham example</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="status">
+      <span class="status-dot"></span>
+      <div><strong>Model status</strong><p>{{ dataset_status }}</p></div>
+    </section>
+
+    <footer>Built with Python · Flask · scikit-learn</footer>
+  </main>
+  <script>
+    document.querySelectorAll("[data-message]").forEach(function(button) {
+      button.addEventListener("click", function() {
+        document.getElementById("message").value = button.dataset.message;
+        document.getElementById("message").focus();
+      });
+    });
+  </script>
+</body>
+</html>
