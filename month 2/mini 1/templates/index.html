@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Spam Classifier</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <div class="mail-icon">✉</div>
+
+        <h1>Email Spam Classifier</h1>
+        <p class="subtitle">
+            Check whether your email or message is spam or legitimate.
+        </p>
+
+        <section class="card">
+            <label for="message">Enter your email or message</label>
+
+            <textarea
+                id="message"
+                maxlength="20000"
+                placeholder="Paste your email or message here..."
+            ></textarea>
+
+            <div class="actions">
+                <button id="checkBtn" onclick="checkMessage()">
+                    Check Message
+                </button>
+                <button class="clear-btn" onclick="clearMessage()">
+                    Clear
+                </button>
+            </div>
+
+            <p id="error" role="alert"></p>
+
+            <section id="result" class="result" hidden>
+                <h2 id="resultLabel"></h2>
+                <p id="resultMessage"></p>
+                <p>
+                    Model confidence estimate:
+                    <strong id="confidence"></strong>
+                </p>
+                <div class="progress">
+                    <div id="progressBar"></div>
+                </div>
+            </section>
+        </section>
+
+        <footer>
+            Built with Python, Flask and Machine Learning
+        </footer>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
