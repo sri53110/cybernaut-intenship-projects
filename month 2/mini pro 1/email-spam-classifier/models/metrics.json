@@ -1,0 +1,153 @@
+{
+  "best": "naive_bayes",
+  "metrics": {
+    "naive_bayes": {
+      "accuracy": 0.9884,
+      "precision": 0.976,
+      "recall": 0.9313,
+      "f1": 0.9531
+    },
+    "logistic_regression": {
+      "accuracy": 0.9855,
+      "precision": 0.9531,
+      "recall": 0.9313,
+      "f1": 0.9421
+    },
+    "svm": {
+      "accuracy": 0.9884,
+      "precision": 0.976,
+      "recall": 0.9313,
+      "f1": 0.9531
+    }
+  },
+  "keywords": {
+    "spam": [
+      {
+        "word": "longnumber",
+        "weight": 22.332
+      },
+      {
+        "word": "urltoken",
+        "weight": 10.312
+      },
+      {
+        "word": "mobile",
+        "weight": 7.237
+      },
+      {
+        "word": "txt",
+        "weight": 6.633
+      },
+      {
+        "word": "reply",
+        "weight": 6.254
+      },
+      {
+        "word": "claim",
+        "weight": 5.29
+      },
+      {
+        "word": "150p",
+        "weight": 5.261
+      },
+      {
+        "word": "won",
+        "weight": 5.254
+      },
+      {
+        "word": "50",
+        "weight": 5.068
+      },
+      {
+        "word": "arsenal",
+        "weight": 4.916
+      },
+      {
+        "word": "uk",
+        "weight": 4.683
+      },
+      {
+        "word": "service",
+        "weight": 4.469
+      },
+      {
+        "word": "prize",
+        "weight": 4.448
+      },
+      {
+        "word": "tones",
+        "weight": 4.376
+      },
+      {
+        "word": "ringtone",
+        "weight": 4.343
+      }
+    ],
+    "ham": [
+      {
+        "word": "ok",
+        "weight": 3.237
+      },
+      {
+        "word": "home",
+        "weight": 2.883
+      },
+      {
+        "word": "lt",
+        "weight": 2.607
+      },
+      {
+        "word": "da",
+        "weight": 2.593
+      },
+      {
+        "word": "gt",
+        "weight": 2.553
+      },
+      {
+        "word": "ll",
+        "weight": 2.536
+      },
+      {
+        "word": "got",
+        "weight": 2.422
+      },
+      {
+        "word": "ring ur",
+        "weight": 2.388
+      },
+      {
+        "word": "ring",
+        "weight": 2.354
+      },
+      {
+        "word": "later",
+        "weight": 2.341
+      },
+      {
+        "word": "lt gt",
+        "weight": 2.275
+      },
+      {
+        "word": "lor",
+        "weight": 2.262
+      },
+      {
+        "word": "know",
+        "weight": 2.189
+      },
+      {
+        "word": "way",
+        "weight": 2.138
+      },
+      {
+        "word": "lol",
+        "weight": 2.121
+      }
+    ]
+  },
+  "dataset": {
+    "total": 5169,
+    "spam": 653
+  }
+}
