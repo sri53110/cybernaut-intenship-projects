@@ -1,4 +1,4 @@
-
+```python
 """SpamShield API — Flask application for Vercel."""
 
 import json
@@ -13,26 +13,21 @@ import joblib
 import numpy as np
 from flask import Flask, jsonify, request, send_from_directory
 
-# Project paths:
-# month/spamshield/
-#   backend/app.py
-#   frontend/index.html
-#   ml/preprocess.py
-#   models/spam_models.joblib
+# Project paths
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "frontend"
 MODEL_DIR = Path(os.environ.get("MODEL_DIR", str(ROOT / "models")))
-
 ML_DIR = ROOT / "ml"
+
 if str(ML_DIR) not in sys.path:
     sys.path.insert(0, str(ML_DIR))
 
-import preprocess  # noqa: E402,F401
+import preprocess  # noqa: E402
 
 app = Flask(__name__, static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024
 
-# Check required files before loading the models.
+# Check required files
 required_files = [
     MODEL_DIR / "spam_models.joblib",
     MODEL_DIR / "metrics.json",
@@ -40,19 +35,24 @@ required_files = [
     FRONTEND / "index.html",
 ]
 
-missing = [str(p) for p in required_files if not p.is_file()]
+missing = [str(path) for path in required_files if not path.is_file()]
 if missing:
     raise FileNotFoundError(
         "Required SpamShield files are missing: " + ", ".join(missing)
     )
 
+# Load trained models and metadata
 _bundle = joblib.load(MODEL_DIR / "spam_models.joblib")
 MODELS = _bundle["models"]
 DEFAULT = _bundle["default"]
 LABELS = _bundle["labels"]
 
-METRICS = json.loads((MODEL_DIR / "metrics.json").read_text(encoding="utf-8"))
-KEYWORDS = json.loads((MODEL_DIR / "keywords.json").read_text(encoding="utf-8"))
+METRICS = json.loads(
+    (MODEL_DIR / "metrics.json").read_text(encoding="utf-8")
+)
+KEYWORDS = json.loads(
+    (MODEL_DIR / "keywords.json").read_text(encoding="utf-8")
+)
 
 _lr = MODELS["logistic_regression"]
 _vec = _lr.named_steps["tfidf"]
@@ -274,14 +274,25 @@ def predict_batch():
     )
 
 
+# Homepage
 @app.get("/")
 def index():
     return send_from_directory(str(FRONTEND), "index.html")
 
 
+# Frontend assets such as CSS, JavaScript and images
 @app.get("/<path:path>")
 def assets(path):
     if path.startswith("api/"):
+        return jsonify(error="Not found"), 404
+
+    file_path = (FRONTEND / path).resolve()
+
+    # Prevent access outside the frontend directory
+    if not file_path.is_relative_to(FRONTEND.resolve()):
+        return jsonify(error="Not found"), 404
+
+    if not file_path.is_file():
         return jsonify(error="Not found"), 404
 
     return send_from_directory(str(FRONTEND), path)
@@ -293,3 +304,4 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", "8000")),
         debug=False,
     )
+```
