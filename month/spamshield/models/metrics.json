@@ -1,0 +1,65 @@
+{
+  "dataset": "sample_sms.csv",
+  "rows": 2000,
+  "spam_ratio": 0.252,
+  "train_rows": 1600,
+  "test_rows": 400,
+  "default_model": "naive_bayes",
+  "is_sample_data": true,
+  "models": {
+    "naive_bayes": {
+      "name": "Naive Bayes",
+      "accuracy": 0.99,
+      "precision": 0.970873786407767,
+      "recall": 0.9900990099009901,
+      "f1": 0.9803921568627451,
+      "roc_auc": 0.9952978575449518,
+      "false_positive_rate": 0.010033444816053512,
+      "cv_f1_mean": 0.9874838823806902,
+      "cv_f1_std": 0.006861082247336414,
+      "confusion": {
+        "tn": 296,
+        "fp": 3,
+        "fn": 1,
+        "tp": 100
+      },
+      "train_seconds": 0.47
+    },
+    "logistic_regression": {
+      "name": "Logistic Regression",
+      "accuracy": 0.99,
+      "precision": 0.970873786407767,
+      "recall": 0.9900990099009901,
+      "f1": 0.9803921568627451,
+      "roc_auc": 0.9886088943342496,
+      "false_positive_rate": 0.010033444816053512,
+      "cv_f1_mean": 0.9862569826030658,
+      "cv_f1_std": 0.006133883683339647,
+      "confusion": {
+        "tn": 296,
+        "fp": 3,
+        "fn": 1,
+        "tp": 100
+      },
+      "train_seconds": 0.51
+    },
+    "svm": {
+      "name": "Support Vector Machine",
+      "accuracy": 0.99,
+      "precision": 0.970873786407767,
+      "recall": 0.9900990099009901,
+      "f1": 0.9803921568627451,
+      "roc_auc": 0.9889400311268585,
+      "false_positive_rate": 0.010033444816053512,
+      "cv_f1_mean": 0.9874838823806902,
+      "cv_f1_std": 0.006861082247336414,
+      "confusion": {
+        "tn": 296,
+        "fp": 3,
+        "fn": 1,
+        "tp": 100
+      },
+      "train_seconds": 0.74
+    }
+  }
+}

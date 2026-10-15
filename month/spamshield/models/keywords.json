@@ -1,0 +1,206 @@
+{
+  "spam": [
+    {
+      "term": "urltoken",
+      "weight": 5.025189394232066
+    },
+    {
+      "term": "claim",
+      "weight": 4.608569249206733
+    },
+    {
+      "term": "moneytoken",
+      "weight": 4.221168789815712
+    },
+    {
+      "term": "week talk",
+      "weight": 3.714078421286005
+    },
+    {
+      "term": "weekend let",
+      "weight": 3.1321269442298645
+    },
+    {
+      "term": "study offer",
+      "weight": 3.086947276769268
+    },
+    {
+      "term": "allcapstoken",
+      "weight": 3.06834592238423
+    },
+    {
+      "term": "came thanks",
+      "weight": 3.0454851990281777
+    },
+    {
+      "term": "account",
+      "weight": 2.995019713641459
+    },
+    {
+      "term": "start thanks",
+      "weight": 2.8729535795455714
+    },
+    {
+      "term": "ok send",
+      "weight": 2.825470648134738
+    },
+    {
+      "term": "today",
+      "weight": 2.8006531207334078
+    },
+    {
+      "term": "hey physics",
+      "weight": 2.715889047009678
+    },
+    {
+      "term": "morning reschedule",
+      "weight": 2.5342642164613425
+    },
+    {
+      "term": "lab week",
+      "weight": 2.407035127139016
+    },
+    {
+      "term": "manyexclaimtoken",
+      "weight": 2.345034341620771
+    },
+    {
+      "term": "phonetoken claim",
+      "weight": 2.284892321354667
+    },
+    {
+      "term": "phonetoken",
+      "weight": 2.284892321354667
+    },
+    {
+      "term": "hey running",
+      "weight": 2.257760122891617
+    },
+    {
+      "term": "pm friday",
+      "weight": 2.245325253090043
+    },
+    {
+      "term": "win",
+      "weight": 2.244291124526889
+    },
+    {
+      "term": "reply win",
+      "weight": 2.244291124526889
+    },
+    {
+      "term": "win numtoken",
+      "weight": 2.244291124526889
+    },
+    {
+      "term": "act",
+      "weight": 2.199442578997598
+    },
+    {
+      "term": "attention",
+      "weight": 2.1955778915202306
+    }
+  ],
+  "ham": [
+    {
+      "term": "hi",
+      "weight": -3.2626966910970987
+    },
+    {
+      "term": "btw",
+      "weight": -3.045282130044851
+    },
+    {
+      "term": "hello",
+      "weight": -2.9453293106692087
+    },
+    {
+      "term": "confirm",
+      "weight": -2.8921001285803656
+    },
+    {
+      "term": "quick",
+      "weight": -2.7915581259308495
+    },
+    {
+      "term": "free talk",
+      "weight": -2.6012018704081687
+    },
+    {
+      "term": "cheers",
+      "weight": -2.4496786631975573
+    },
+    {
+      "term": "hey",
+      "weight": -2.445586124254259
+    },
+    {
+      "term": "numtoken numtoken",
+      "weight": -2.432037063430152
+    },
+    {
+      "term": "dinner",
+      "weight": -2.3994645686453517
+    },
+    {
+      "term": "pick",
+      "weight": -2.200845215688228
+    },
+    {
+      "term": "talk",
+      "weight": -2.1927761942834656
+    },
+    {
+      "term": "saturday",
+      "weight": -2.158588666669642
+    },
+    {
+      "term": "meeting",
+      "weight": -2.015467811271673
+    },
+    {
+      "term": "place",
+      "weight": -2.0016209217250758
+    },
+    {
+      "term": "ll",
+      "weight": -1.6955451901761707
+    },
+    {
+      "term": "way home",
+      "weight": -1.6541200888686751
+    },
+    {
+      "term": "way",
+      "weight": -1.6541200888686751
+    },
+    {
+      "term": "great",
+      "weight": -1.6238957670121215
+    },
+    {
+      "term": "monday",
+      "weight": -1.563365444462656
+    },
+    {
+      "term": "ok",
+      "weight": -1.5027071023442828
+    },
+    {
+      "term": "maths",
+      "weight": -1.463554370752283
+    },
+    {
+      "term": "numtoken work",
+      "weight": -1.4594816600553926
+    },
+    {
+      "term": "dinner place",
+      "weight": -1.4198235485929818
+    },
+    {
+      "term": "cooking",
+      "weight": -1.4198235485929818
+    }
+  ]
+}

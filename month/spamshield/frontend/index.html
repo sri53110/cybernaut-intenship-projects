@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpamShield</title>
+<meta name="description" content="Paste an email or SMS and see whether it is spam, with the exact words that gave it away.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101820'/%3E%3Cpath d='M6 11l10 7 10-7v11H6z' fill='none' stroke='%23EEF1F3' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#analyzer">Skip to analyzer</a>
+
+<header class="top">
+  <a class="brand" href="#">
+    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M6 11l10 7 10-7v11H6z" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
+    SpamShield
+  </a>
+  <nav aria-label="Primary">
+    <a href="#analyzer">Check a message</a>
+    <a href="#performance">Accuracy</a>
+    <a href="#signals">Spam signals</a>
+    <a href="#how">How it works</a>
+    <a href="#api">API</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>Every message gets opened and inspected before it reaches you.</h1>
+      <p class="lede">Paste an email or text message. SpamShield tells you whether it is spam and shows the exact words and links that gave it away.</p>
+      <ul class="facts" id="facts" aria-label="Live service facts">
+        <li><b id="f-model">–</b><span>default model</span></li>
+        <li><b id="f-prec">–</b><span>precision on held-out mail</span></li>
+        <li><b id="f-ms">–</b><span>to classify one message</span></li>
+      </ul>
+    </div>
+
+    <div class="letter" id="analyzer" aria-labelledby="letter-title">
+      <div class="airmail" aria-hidden="true"></div>
+      <div class="letter-body">
+        <div id="stamp" class="stamp" hidden role="status"></div>
+        <div class="tabs" role="tablist" aria-label="Mode">
+          <button role="tab" id="tab-one" aria-selected="true" aria-controls="panel-one">One message</button>
+          <button role="tab" id="tab-many" aria-selected="false" aria-controls="panel-many" tabindex="-1">Many messages</button>
+        </div>
+
+        <div id="panel-one" role="tabpanel" aria-labelledby="tab-one">
+          <h2 id="letter-title" class="sr">Check one message</h2>
+          <label for="subject">Subject <span class="opt">(optional)</span></label>
+          <input id="subject" type="text" maxlength="300" autocomplete="off" placeholder="Re: your invoice">
+          <label for="body">Message</label>
+          <div class="stage">
+            <textarea id="body" rows="7" maxlength="20000" placeholder="Paste the email or SMS text here"></textarea>
+            <div id="marked" class="marked" hidden aria-live="polite"></div>
+          </div>
+          <div class="row">
+            <div class="seg" role="radiogroup" aria-label="Model" id="models"></div>
+            <button class="btn" id="go">Check message</button>
+          </div>
+          <div class="samples">
+            Try an example:
+            <button class="chip" data-s="0">Prize winner</button>
+            <button class="chip" data-s="1">Bank alert</button>
+            <button class="chip" data-s="2">Parcel fee</button>
+            <button class="chip" data-s="3">Lunch plans</button>
+            <button class="chip" data-s="4">Meeting moved</button>
+          </div>
+          <p id="err" class="err" role="alert" hidden></p>
+        </div>
+
+        <div id="panel-many" role="tabpanel" aria-labelledby="tab-many" hidden>
+          <h2 class="sr">Check many messages</h2>
+          <label for="batch">One message per line (up to 100)</label>
+          <textarea id="batch" rows="9" placeholder="WINNER!! Claim your prize at http://win-prize.biz&#10;Are we still on for lunch tomorrow?"></textarea>
+          <div class="row"><span class="muted" id="batch-count">0 messages</span><button class="btn" id="go-batch">Check all</button></div>
+          <p id="err-batch" class="err" role="alert" hidden></p>
+          <div id="batch-out" hidden>
+            <p id="batch-sum" class="sum"></p>
+            <ul class="blist" id="batch-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="result" hidden aria-live="polite">
+    <div class="gauge-wrap">
+      <svg id="gauge" viewBox="0 0 220 130" role="img" aria-label="Spam probability"></svg>
+      <div class="gauge-num"><b id="g-pct">0%</b><span>chance of spam</span></div>
+    </div>
+    <div class="why">
+      <h2>Why this verdict</h2>
+      <p id="why-line" class="why-line"></p>
+      <div class="two">
+        <div><h3>Points toward spam</h3><ul class="bars spam" id="sig-spam"></ul></div>
+        <div><h3>Points toward legitimate</h3><ul class="bars ham" id="sig-ham"></ul></div>
+      </div>
+    </div>
+    <div class="votes">
+      <h3>What each model says</h3>
+      <ul id="votes"></ul>
+      <p class="muted" id="vote-note"></p>
+    </div>
+  </section>
+
+  <section id="performance" class="block">
+    <div class="block-head">
+      <h2>How accurate is it?</h2>
+      <p>Scores below come from messages the models never saw during training. For a spam filter the number that matters most is precision: of everything blocked, how much was really spam.</p>
+    </div>
+    <p id="sample-note" class="note" hidden>These numbers come from the small synthetic sample dataset that ships with the project, so treat them as a smoke test. Train on the UCI SMS Spam Collection or SpamAssassin to get real figures (see the README).</p>
+    <div class="perf">
+      <div class="table-wrap">
+        <table id="perf-table">
+          <thead><tr><th scope="col">Model</th><th scope="col">Accuracy</th><th scope="col">Precision</th><th scope="col">Recall</th><th scope="col">F1</th><th scope="col">False alarms</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <figure class="cm">
+        <figcaption id="cm-cap">Confusion matrix</figcaption>
+        <div class="cm-grid" id="cm"></div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="signals" class="block">
+    <div class="block-head">
+      <h2>The words that give spam away</h2>
+      <p>Learned from the training data by the logistic regression model. Longer bars mean a stronger signal. Tokens like <code>urltoken</code> and <code>moneytoken</code> stand for any link or any money amount.</p>
+    </div>
+    <div class="two wide">
+      <div><h3>Most spam-like</h3><ul class="bars spam" id="kw-spam"></ul></div>
+      <div><h3>Most legitimate</h3><ul class="bars ham" id="kw-ham"></ul></div>
+    </div>
+  </section>
+
+  <section id="how" class="block">
+    <div class="block-head"><h2>What happens to a message</h2></div>
+    <ol class="steps">
+      <li><h3>Clean</h3><p>HTML is stripped. Links, addresses, phone numbers, money and digits become placeholder tokens, and SHOUTING or many exclamation marks are flagged.</p></li>
+      <li><h3>Weigh</h3><p>Words and word pairs are scored with TF-IDF, so rare, telling phrases count for more than common ones.</p></li>
+      <li><h3>Classify</h3><p>Naive Bayes, Logistic Regression and a Support Vector Machine each return a probability of spam.</p></li>
+      <li><h3>Explain</h3><p>The words that moved the score are listed, so a blocked message never needs to be a mystery.</p></li>
+    </ol>
+  </section>
+
+  <section id="api" class="block">
+    <div class="block-head">
+      <h2>Use it from your own app</h2>
+      <p>The same service powers this page. Send JSON, get a verdict.</p>
+    </div>
+    <pre class="code" tabindex="0"><code>curl -X POST <span id="origin">http://localhost:8000</span>/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{"subject": "Final notice", "text": "Verify your account at http://secure-login.top", "model": "svm"}'</code></pre>
+    <pre class="code" tabindex="0"><code>{
+  "label": "spam",
+  "spam_probability": 0.97,
+  "confidence": "high",
+  "spam_signals": [{ "term": "urltoken", "score": 0.41 }],
+  "votes": { "naive_bayes": 0.99, "logistic_regression": 0.96, "svm": 0.97 }
+}</code></pre>
+  </section>
+</main>
+
+<footer>
+  <p>SpamShield classifies text on this server. Nothing you paste is stored.</p>
+  <p class="muted">Python, scikit-learn, Flask. Built from the Email Spam Classifier project brief.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
