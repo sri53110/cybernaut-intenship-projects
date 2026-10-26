@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeTriage: Message Risk Scanner</title>
+<style>
+:root{--fog:#0b1730;--ink:#090f1b;--paper:#dce8f8;--slate:#354966;--line:#9db4d4;--ok:#126d55;--warn:#855d08;--bad:#a91f49;--blue:#244674;--pink:#e84a8a}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.6 "Avenir Next","Segoe UI",system-ui,sans-serif;color:#dce8f8;background:radial-gradient(ellipse at 50% 0%,#19345b 0,var(--fog) 62%) fixed}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 24px 40px}
+h1{font:600 clamp(40px,7vw,76px)/.98 Charter,"Iowan Old Style",Georgia,serif;letter-spacing:-.025em;color:#dce8f8;text-shadow:0 0 34px #8eb7f050}
+.lede{max-width:56ch;margin:18px 0 40px;color:var(--slate);font-size:17px}
+h2{font:600 24px/1.2 Charter,Georgia,serif;margin-bottom:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.panel{color:var(--ink);background:linear-gradient(145deg,#eaf2fc,var(--paper) 68%);border:1px solid var(--line);border-radius:8px;padding:26px;box-shadow:0 14px 36px #0005}
+label{display:block;font-weight:600;font-size:13px;margin:16px 0 6px}
+input,textarea{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:4px;background:#edf4fd;color:var(--ink)}
+textarea{min-height:170px;resize:vertical}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid #527fba;outline-offset:1px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+button{font:inherit;cursor:pointer;border-radius:5px;padding:10px 16px;border:1px solid #8ca8cc;background:#dce8f8;color:var(--ink);transition:background .18s,border-color .18s,transform .18s}
+button.go{background:linear-gradient(110deg,#eaf2fc,#b8cee9);border-color:#7d9fc9;color:#090f1b;font-weight:600;box-shadow:0 5px 18px #0003}
+button.go:disabled{opacity:.55;cursor:wait}
+button.chip{font-size:13px;padding:6px 10px;border-color:#8ca8cc;color:var(--ink);background:#dce8f8}
+button:hover{border-color:#527fba;background-color:#c5d8ef;transform:translateY(-1px)}
+.scale{position:relative;height:22px;border-radius:3px;margin:34px 0 8px;background:linear-gradient(90deg,var(--ok) 0 var(--a,35%),var(--warn) var(--a,35%) var(--b,65%),var(--bad) var(--b,65%) 100%)}
+.scale.mini{height:8px;margin:6px 0 0;opacity:.45}
+.needle{position:absolute;top:-9px;width:3px;height:40px;background:var(--ink);box-shadow:0 0 8px #090f1b80;left:50%;transition:left .7s cubic-bezier(.2,.8,.2,1)}
+.needle::after{content:attr(data-v);position:absolute;top:-22px;left:-14px;font-weight:700;font-size:13px}
+.mini .needle{top:-4px;height:16px;width:3px}.mini .needle::after{content:none}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--slate)}
+.verdict{font:600 30px/1.15 Charter,Georgia,serif;margin:18px 0 4px}
+.v-phishing,.v-legitimate,.v-review{color:var(--ink)}
+.sub{color:var(--slate);font-size:14px}
+ul.cues{list-style:none;padding:0;margin:12px 0 0;border-top:1px solid var(--line)}
+ul.cues li{padding:10px 0;border-bottom:1px solid var(--line)}
+ul.cues b{display:block;font-size:14px}
+.models{margin-top:22px;display:grid;gap:14px}
+.models small{color:var(--slate);display:flex;justify-content:space-between}
+.empty{color:var(--slate);padding:36px 0}
+.err{color:var(--ink);font-weight:600;margin-top:12px}
+section{margin-top:56px}
+table{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px;background:var(--paper)}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+th{font-size:12.5px;color:var(--ink);font-weight:600;background:#c7d9ef}
+td.drop{color:var(--ink);font-weight:700}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+.errs{margin-top:18px;display:grid;gap:8px;font-size:14px}
+.errs div{padding:10px 12px;background:var(--paper);color:var(--ink);border-left:4px solid #527fba}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);color:var(--slate);font-size:13px}
+.lede,section>.sub,footer{color:#bfcee3}
+@media(max-width:820px){.grid{grid-template-columns:1fr}.wrap{padding:32px 16px}}
+@media(prefers-reduced-motion:reduce){.needle{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SafeTriage</h1>
+  <p class="lede">Paste a training message. The scanner scores it, shows the cues behind the score, and says "ask an analyst" when it is not sure.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Message</h2>
+      <p class="sub">Simulated emails and SMS only. Links are defanged and never opened.</p>
+      <label for="subject">Subject (optional)</label>
+      <input id="subject" maxlength="200" placeholder="Password reset requested">
+      <label for="body">Message text</label>
+      <textarea id="body" placeholder="Paste the message here"></textarea>
+      <div class="row">
+        <button class="go" id="scan">Scan message</button>
+        <button class="chip" data-s="0">Try: legitimate reset</button>
+        <button class="chip" data-s="1">Try: unfamiliar wording</button>
+        <button class="chip" data-s="2">Try: short link</button>
+      </div>
+      <div class="err" id="err" role="alert"></div>
+    </div>
+
+    <div class="panel" aria-live="polite">
+      <h2>Risk reading</h2>
+      <div id="out" class="empty">Scan a message to see its risk reading.</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Evidence from the held-out campaigns</h2>
+    <p class="sub" id="corpus">Loading evaluation results…</p>
+    <div class="scroll"><table id="tbl"></table></div>
+    <div class="errs" id="errs"></div>
+  </section>
+
+  <footer>SafeTriage ML-07 · Classification is decision support, not a guarantee of safety. Do not paste real credentials or personal data.</footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const NAMES = {rules: "Rules", tfidf_logreg: "TF-IDF + logistic regression", random_forest: "Random forest"};
+const SAMPLES = [
+  ["Password reset requested", "Hi Sam, a password reset was requested from the helpdesk portal. Reset it at https://intranet.acme.test/it. If this wasn't you, call the helpdesk."],
+  ["Quick favour", "Are you at your desk? I'm in a meeting and can't talk. Could you pick up a few vouchers for a client today? Keep this between us."],
+  ["Shared with you", "A colleague shared a document with you. Sign in to view: http://bit.ly/3xK9a"]
+];
+const LABEL = {phishing: "Likely phishing", legitimate: "Likely legitimate", review: "Needs analyst review"};
+const HINT = {phishing: "Do not click or reply. Report it to the helpdesk.", legitimate: "No strong risk cues found.", review: "The scanner abstained: the score sits in the uncertain zone or the models disagree."};
+
+document.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+  const [s, t] = SAMPLES[b.dataset.s]; $("#subject").value = s; $("#body").value = t; scan();
+});
+$("#scan").onclick = scan;
+
+function scale(v, band, mini) {
+  return `<div class="scale ${mini ? "mini" : ""}" style="--a:${band[0] * 100}%;--b:${band[1] * 100}%">
+    <div class="needle" data-v="${Math.round(v * 100)}" style="left:${v * 100}%"></div></div>`;
+}
+
+async function scan() {
+  const btn = $("#scan"); $("#err").textContent = "";
+  btn.disabled = true; btn.textContent = "Scanning…";
+  try {
+    const r = await fetch("/api/analyze", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({subject: $("#subject").value, body: $("#body").value})});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Request failed");
+    const band = d.abstain_band;
+    $("#out").className = "";
+    $("#out").innerHTML = `
+      ${scale(0, band)}
+      <div class="ticks"><span>Legitimate</span><span>Uncertain: ask an analyst</span><span>Phishing</span></div>
+      <div class="verdict v-${d.verdict}">${LABEL[d.verdict]}</div>
+      <p class="sub">${HINT[d.verdict]}</p>
+      <ul class="cues">${d.cues.length ? d.cues.map(c => `<li><b>${esc(c.cue)}</b>${esc(c.why)}</li>`).join("") : "<li>No rule cues matched.</li>"}</ul>
+      <div class="models">${Object.entries(d.scores).map(([k, v]) =>
+        `<div><small><span>${NAMES[k]}</span><span>${Math.round(v * 100)}%</span></small>${scale(0, band, true).replace('left:0%', "left:" + v * 100 + "%")}</div>`).join("")}</div>
+      <p class="sub" style="margin-top:18px">${esc(d.disclaimer)} Model ${esc(d.model_version)}.</p>`;
+    requestAnimationFrame(() => { const n = $("#out .scale .needle"); n.style.left = d.risk * 100 + "%"; n.dataset.v = Math.round(d.risk * 100); });
+  } catch (e) {
+    $("#err").textContent = e.message.includes("fetch") ? "Cannot reach the backend. Start it with: python backend/app.py" : e.message;
+  } finally { btn.disabled = false; btn.textContent = "Scan message"; }
+}
+
+async function evidence() {
+  try {
+    const d = await (await fetch("/api/report")).json(), c = d.corpus, pct = v => v == null ? "n/a" : Math.round(v * 100) + "%";
+    $("#corpus").textContent = `${c.raw} messages, ${c.duplicates_removed} near-duplicates removed before splitting, ${c.after_dedup} kept. Held out: ${c.holdout_campaigns.join(", ")}. A random split flatters every model; the campaign split is the honest test.`;
+    $("#tbl").innerHTML = `<tr><th>Model</th><th>F1, random split</th><th>F1, campaign holdout</th><th>Phishing caught</th><th>False alarms</th><th>False alarms on urgent legit mail</th><th>Worst flip rate under perturbation</th></tr>` +
+      Object.entries(d.models).map(([k, m]) => {
+        const f1r = m.random_split.f1, f1h = m.campaign_holdout.f1, flip = Math.max(...Object.values(m.robustness).map(x => x.flip_rate));
+        return `<tr><td><b>${NAMES[k]}</b></td><td>${f1r}</td><td class="${f1r - f1h > .1 ? "drop" : ""}">${f1h}</td><td>${pct(m.campaign_holdout.recall)}</td><td>${pct(m.campaign_holdout.fpr)}</td><td>${pct(m.legit_urgent.fpr)} (n=${m.legit_urgent.n})</td><td>${pct(flip)}</td></tr>`;
+      }).join("");
+    $("#errs").innerHTML = d.error_examples.map(e => `<div><b>${e.label ? "Missed phishing" : "Flagged legitimate"} · ${esc(e.campaign_group)} · score ${e.p}</b><br>${esc(e.body_text)}</div>`).join("");
+  } catch { $("#corpus").textContent = "Evaluation results are unavailable. Start the backend to load them."; }
+}
+evidence();
+</script>
+</body>
+</html>

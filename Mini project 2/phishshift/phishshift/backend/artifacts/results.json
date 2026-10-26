@@ -1,0 +1,190 @@
+{
+  "corpus": {
+    "raw": 510,
+    "duplicates_removed": 132,
+    "after_dedup": 378,
+    "train": 256,
+    "test": 122,
+    "holdout_campaigns": [
+      "p_ceo",
+      "p_doc",
+      "b_payroll",
+      "b_meet"
+    ]
+  },
+  "models": {
+    "rules": {
+      "random_split": {
+        "f1": 0.675,
+        "recall": 0.52,
+        "fpr": 0.022,
+        "cm": [
+          [
+            44,
+            1
+          ],
+          [
+            24,
+            26
+          ]
+        ]
+      },
+      "campaign_holdout": {
+        "f1": 0.243,
+        "recall": 0.143,
+        "fpr": 0.034,
+        "cm": [
+          [
+            57,
+            2
+          ],
+          [
+            54,
+            9
+          ]
+        ]
+      },
+      "legit_urgent": {
+        "n": 9,
+        "fpr": 0.0
+      },
+      "robustness": {
+        "defang_variant": {
+          "mean_abs_drift": 0.072,
+          "flip_rate": 0.041
+        },
+        "punctuation": {
+          "mean_abs_drift": 0.072,
+          "flip_rate": 0.041
+        },
+        "hyphenated_words": {
+          "mean_abs_drift": 0.0,
+          "flip_rate": 0.0
+        }
+      }
+    },
+    "tfidf_logreg": {
+      "random_split": {
+        "f1": 1.0,
+        "recall": 1.0,
+        "fpr": 0.0,
+        "cm": [
+          [
+            45,
+            0
+          ],
+          [
+            0,
+            50
+          ]
+        ]
+      },
+      "campaign_holdout": {
+        "f1": 0.803,
+        "recall": 0.841,
+        "fpr": 0.271,
+        "cm": [
+          [
+            43,
+            16
+          ],
+          [
+            10,
+            53
+          ]
+        ]
+      },
+      "legit_urgent": {
+        "n": 9,
+        "fpr": 0.222
+      },
+      "robustness": {
+        "defang_variant": {
+          "mean_abs_drift": 0.016,
+          "flip_rate": 0.0
+        },
+        "punctuation": {
+          "mean_abs_drift": 0.0,
+          "flip_rate": 0.0
+        },
+        "hyphenated_words": {
+          "mean_abs_drift": 0.0,
+          "flip_rate": 0.0
+        }
+      }
+    },
+    "random_forest": {
+      "random_split": {
+        "f1": 0.97,
+        "recall": 0.96,
+        "fpr": 0.022,
+        "cm": [
+          [
+            44,
+            1
+          ],
+          [
+            2,
+            48
+          ]
+        ]
+      },
+      "campaign_holdout": {
+        "f1": 0.511,
+        "recall": 0.365,
+        "fpr": 0.068,
+        "cm": [
+          [
+            55,
+            4
+          ],
+          [
+            40,
+            23
+          ]
+        ]
+      },
+      "legit_urgent": {
+        "n": 9,
+        "fpr": 0.111
+      },
+      "robustness": {
+        "defang_variant": {
+          "mean_abs_drift": 0.029,
+          "flip_rate": 0.008
+        },
+        "punctuation": {
+          "mean_abs_drift": 0.0,
+          "flip_rate": 0.0
+        },
+        "hyphenated_words": {
+          "mean_abs_drift": 0.0,
+          "flip_rate": 0.0
+        }
+      }
+    }
+  },
+  "error_examples": [
+    {
+      "message_id": "M0421",
+      "campaign_group": "b_meet",
+      "label": 0,
+      "p": 0.56,
+      "body_text": "Hello Sam, Please send agenda items before Friday. Reply to confirm. - Team"
+    },
+    {
+      "message_id": "M0173",
+      "campaign_group": "p_ceo",
+      "label": 1,
+      "p": 0.45,
+      "body_text": "Hi Priya, Small task before the board call, keep this between us. Let me know when you are free. - Team"
+    },
+    {
+      "message_id": "M0507",
+      "campaign_group": "b_payroll",
+      "label": 0,
+      "p": 0.61,
+      "body_text": "Liam - Payslips are available in the HR portal. View it at hxxps://t[.]co/Qa81z. Thanks."
+    }
+  ]
+}
